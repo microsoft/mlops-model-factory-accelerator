@@ -7,10 +7,12 @@ import pickle
 from sklearn.metrics import mean_squared_error, r2_score
 import mlflow
 import json
+from mlops.common.logger import get_logger
 
+logger = get_logger("london_taxi_score")
 
 def main(predictions, model, score_report):
-    print("hello scoring world...")
+    logger.info("hello scoring world...")
 
 
     lines = [
@@ -20,17 +22,17 @@ def main(predictions, model, score_report):
     ]
 
     for line in lines:
-        print(line)
+        logger.info(line)
 
     # Load the test data with predicted values
 
-    print("mounted_path files: ")
+    logger.info("mounted_path files: ")
     arr = os.listdir(predictions)
 
-    print(arr)
+    logger.info(arr)
     df_list = []
     for filename in arr:
-        print("reading file: %s ..." % filename)
+        logger.info("reading file: %s ..." % filename)
         with open(os.path.join(predictions, filename), "r") as handle:
             input_df = pd.read_csv((Path(predictions) / filename))
             df_list.append(input_df)
@@ -45,7 +47,7 @@ def main(predictions, model, score_report):
 # Print the results of scoring the predictions against actual values in the test data
 def write_results(model, predictions, test_data, score_report):
     # The coefficients
-    print("Coefficients: \n", model.coef_)
+    logger.info("Coefficients: \n", model.coef_)
 
     actuals = test_data["actual_cost"]
     predictions = test_data["predicted_cost"]
@@ -57,12 +59,12 @@ def write_results(model, predictions, test_data, score_report):
     mlflow.log_metric("scoring_r2", r2)
 
     # The mean squared error
-    print("Mean squared error: %.2f" % mse)
+    logger.info("Mean squared error: %.2f" % mse)
     # The coefficient of determination: 1 is perfect prediction
-    print("Coefficient of determination: %.2f" % r2)
-    print("Model: ", model)
+    logger.info("Coefficient of determination: %.2f" % r2)
+    logger.info("Model: ", model)
 
-    # Print score report to a text file
+    # logger.info score report to a text file
     model_score = {
         "mse": mean_squared_error(actuals, predictions),
         "coff": str(model.coef_),

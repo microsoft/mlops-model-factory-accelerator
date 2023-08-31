@@ -8,10 +8,12 @@ import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 import pickle
+from mlops.common.logger import get_logger
 
+logger = get_logger("london_taxi_prep")
 
 def main(raw_data, prep_data):
-    print("hello training world...")
+    logger.info("hello training world...")
 
     lines = [
         f"Raw data path: {raw_data}",
@@ -19,15 +21,15 @@ def main(raw_data, prep_data):
     ]
 
     for line in lines:
-        print(line)
+        logger.info(line)
 
-    print("mounted_path files: ")
+    logger.info("mounted_path files: ")
     arr = os.listdir(raw_data)
-    print(arr)
+    logger.info(arr)
 
     df_list = []
     for filename in arr:
-        print("reading file: %s ..." % filename)
+        logger.info("reading file: %s ..." % filename)
         with open(os.path.join(raw_data, filename), "r") as handle:
             input_df = pd.read_csv((Path(raw_data) / filename))
             df_list.append(input_df)
@@ -56,7 +58,7 @@ def data_prep(green_data, yellow_data):
             "vendor",
         ]
     ).replace(",", ";")
-    print(useful_columns)
+    logger.info(useful_columns)
 
     # Rename columns as per Azure Machine Learning NYC Taxi tutorial
     green_columns = str(
@@ -91,8 +93,8 @@ def data_prep(green_data, yellow_data):
         }
     ).replace(",", ";")
 
-    print("green_columns: " + green_columns)
-    print("yellow_columns: " + yellow_columns)
+    logger.info("green_columns: " + green_columns)
+    logger.info("yellow_columns: " + yellow_columns)
 
     green_data_clean = cleanseData(green_data, green_columns, useful_columns)
     yellow_data_clean = cleanseData(yellow_data, yellow_columns, useful_columns)
@@ -109,7 +111,7 @@ def data_prep(green_data, yellow_data):
     )
     merged_data = combined_df.to_csv(os.path.join(prep_data, "merged_data.csv"))
 
-    print("Finish")
+    logger.info("Finish")
 
 
 # These functions ensure that null data is removed from the dataset,
@@ -118,7 +120,7 @@ def get_dict(dict_str):
     pairs = dict_str.strip("{}").split(";")
     new_dict = {}
     for pair in pairs:
-        print(pair)
+        logger.info(pair)
         key, value = pair.strip().split(":")
         new_dict[key.strip().strip("'")] = value.strip().strip("'")
     return new_dict

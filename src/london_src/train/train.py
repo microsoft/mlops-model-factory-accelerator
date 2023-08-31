@@ -7,10 +7,13 @@ from sklearn.model_selection import train_test_split
 import pickle
 import mlflow
 import json
+from mlops.common.logger import get_logger
+
+logger = get_logger("london_taxi_train")
 
 
 def main(training_data, test_data, model_output, model_metadata):
-    print("Hello training world...")
+    logger.info("Hello training world...")
 
 
     lines = [
@@ -21,21 +24,21 @@ def main(training_data, test_data, model_output, model_metadata):
     ]
 
     for line in lines:
-        print(line)
+        logger.info(line)
 
-    print("mounted_path files: ")
+    logger.info("mounted_path files: ")
     arr = os.listdir(training_data)
-    print(arr)
+    logger.info(arr)
 
     df_list = []
     for filename in arr:
-        print("reading file: %s ..." % filename)
+        logger.info("reading file: %s ..." % filename)
         with open(os.path.join(training_data, filename), "r") as handle:
             input_df = pd.read_csv((Path(training_data) / filename))
             df_list.append(input_df)
 
     train_data = df_list[0]
-    print(train_data.columns)
+    logger.info(train_data.columns)
 
     trainX, testX, trainy, testy = split(train_data)
     write_test_data(testX, testy)
@@ -74,8 +77,8 @@ def split(train_data):
     trainX, testX, trainy, testy = train_test_split(
         X, y, test_size=0.3, random_state=42
     )
-    print(trainX.shape)
-    print(trainX.columns)
+    logger.info(trainX.shape)
+    logger.info(trainX.columns)
 
     return trainX, testX, trainy, testy
 
@@ -85,7 +88,7 @@ def train_model(trainX, trainy):
     # Train a Linear Regression Model with the train set
     with mlflow.start_run() as run:
         model = LinearRegression().fit(trainX, trainy)
-        print(model.score(trainX, trainy))
+        logger.info(model.score(trainX, trainy))
 
         # Output the model, metadata and test data
         run_id = mlflow.active_run().info.run_id
@@ -99,7 +102,7 @@ def train_model(trainX, trainy):
 
 def write_test_data(testX, testy):
     testX["cost"] = testy
-    print(testX.shape)
+    logger.info(testX.shape)
     testX.to_csv((Path(args.test_data) / "test_data.csv"))
 
 

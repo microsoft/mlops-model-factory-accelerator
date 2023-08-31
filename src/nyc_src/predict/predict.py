@@ -4,7 +4,9 @@ import os
 from pathlib import Path
 from sklearn.linear_model import LinearRegression
 import pickle
+from mlops.common.logger import get_logger
 
+logger = get_logger("myc_taxi_predict")
 
 def main(model_input, test_data, prediction_path):
     lines = [
@@ -14,7 +16,7 @@ def main(model_input, test_data, prediction_path):
     ]
 
     for line in lines:
-        print(line)
+        logger.info(line)
 
     testX, testy = load_test_data(test_data)
     predict(testX, testy, model_input, prediction_path)
@@ -22,13 +24,13 @@ def main(model_input, test_data, prediction_path):
 
 # Load and split the test data
 def load_test_data(test_data):
-    print("mounted_path files: ")
+    logger.info("mounted_path files: ")
     arr = os.listdir(test_data)
 
-    print(arr)
+    logger.info(arr)
     df_list = []
     for filename in arr:
-        print("reading file: %s ..." % filename)
+        logger.info("reading file: %s ..." % filename)
         with open(os.path.join(test_data, filename), "r") as handle:
             input_df = pd.read_csv((Path(test_data) / filename))
             df_list.append(input_df)
@@ -59,8 +61,8 @@ def load_test_data(test_data):
             "dropoff_second",
         ]
     ]
-    print(testX.shape)
-    print(testX.columns)
+    logger.info(testX.shape)
+    logger.info(testX.columns)
     return testX, testy
 
 
@@ -71,7 +73,7 @@ def predict(testX, testy, model_input, prediction_path):
     # Make predictions on testX data and record them in a column named predicted_cost
     predictions = model.predict(testX)
     testX["predicted_cost"] = predictions
-    print(testX.shape)
+    logger.info(testX.shape)
 
     # Compare predictions to actuals (testy)
     output_data = pd.DataFrame(testX)
@@ -88,7 +90,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print("hello scoring world...")
+    logger.info("hello scoring world...")
 
     model_input = args.model_input
     test_data = args.test_data
