@@ -1,0 +1,18 @@
+FROM arm64v8/python:3.9.16-slim-buster
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends curl && \
+    curl -sSL https://install.python-poetry.org | python3 -
+
+ENV PATH="/root/.local/bin:$PATH"
+
+WORKDIR /app
+
+COPY pyproject.toml poetry.lock /app/
+
+RUN poetry config installer.max-workers 10 && \
+    poetry install --no-interaction --no-ansi -vvv
+
+COPY . .
+
+CMD [ "poetry", "run", "python3", "-u", "./main.py" ]

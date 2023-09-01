@@ -1,0 +1,43 @@
+trigger:
+  none
+pr:
+  branches:
+    include:
+      - master
+  paths:
+    include:
+      - use_case_builder/fridge_detection/*
+      - use_case_builder/common/*
+
+parameters:
+  - name: exec_environment
+    displayName: "Execution Environment"
+    default: "dev"
+  - name: use_case_type
+    displayName: "type of use case to execute"
+    default: "fridge_detection"
+  - name: deploy_to_device_target_condition
+    displayName: "deployment target device condition"
+    default: "tags.device='e2e-test'"
+
+variables:
+- group: mlops_platform_${{parameters.exec_environment}}_vg
+- name: PIPELINE_TYPE
+  value: ${{parameters.use_case_type}}
+
+stages:
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/use_case_builder/common/devops/templates/stage_variable_generation.yml
+    parameters:
+      exec_environment: ${{parameters.exec_environment}}
+      use_case_type: ${{parameters.use_case_type}}
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/use_case_builder/common/devops/templates/stage_build_validation.yml
+    parameters:
+      exec_environment: ${{parameters.exec_environment}}
+      use_case_type: ${{parameters.use_case_type}}
+
+  - template: ${{variables['System.DefaultWorkingDirectory']}}/use_case_builder/common/devops/templates/stage_platform_pr_pipeline.yml
+    parameters:
+      exec_environment: ${{parameters.exec_environment}}
+      use_case_type: ${{parameters.use_case_type}}
+      deploy_to_device_target_condition: ${{parameters.deploy_to_device_target_condition}}

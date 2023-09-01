@@ -1,0 +1,6 @@
+{
+    "name": "fridge_obj_det",
+    "scripts": {
+        "version": "semantic-release"
+      }
+}

@@ -1,0 +1,35 @@
+
+  - task: AzureCLI@2
+    displayName: Test model locally
+    continueOnError: false
+    condition: |
+      or(
+        eq(variables['Build.Reason'], 'PullRequest'),
+        eq(variables['Build.Reason'], 'Manual')
+      )
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      workingDirectory: $(System.DefaultWorkingDirectory)/model_factory/${{parameters.model_type}}/model
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -e # fail on error
+        sleep 15
+        echo "$(pwd)"
+        echo "$(ls)"
+        tree
+        curl -i --request POST  "http://0.0.0.0:$(HOST_PORT_NUMBER)/score" --header 'Content-Type: application/json' --data @sample-request.json            inference_output=$(curl -i --request POST  "http://0.0.0.0:$(HOST_PORT_NUMBER)/score" --header 'Content-Type: application/json' --data @sample-request.json | grep '200 OK')
+        if [[ $(echo "$inference_output") =~ "200 OK" ]]
+        then
+          echo "inferencing succeeded"
+        else
+          echo "inferencing failed"
+          exit 2
+        fi
+  - script: |
+      if [[ "$(docker ps -aqf "name=$(temp_container_name)$(Build.BuildNumber)")" ]]; then
+        echo "Container $(temp_container_name)$(Build.BuildNumber) exists. Removing it..."
+        docker stop $(temp_container_name)$(Build.BuildNumber)
+        docker rm $(temp_container_name)$(Build.BuildNumber) 
+      fi
+    displayName: stop and remove temp container

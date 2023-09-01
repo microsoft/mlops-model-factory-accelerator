@@ -1,0 +1,27 @@
+parameters:
+  - name: model_type
+    displayName: "type of model to execute"
+
+steps:
+  - task: UsePythonVersion@0
+    displayName: "Use Python 3.8"
+    inputs:
+      versionSpec: "3.8"
+
+  - script: |
+      python -m venv env
+      source env/bin/activate
+    displayName: "Create Virtual env"
+
+  - task: AzureCLI@2
+    displayName: Install Job Requirements
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        set -e # fail on error
+        source env/bin/activate
+        python -m pip install --upgrade pip
+        pip install -r $(System.DefaultWorkingDirectory)/model_factory/${{parameters.model_type}}/devops/pipelines/requirements/execute_job_requirements.txt
+        az version

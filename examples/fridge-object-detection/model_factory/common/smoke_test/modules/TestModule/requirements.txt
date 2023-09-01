@@ -1,0 +1,2 @@
+azure-iot-device~=2.7.0
+json-schema-matcher == 0.1.7.1

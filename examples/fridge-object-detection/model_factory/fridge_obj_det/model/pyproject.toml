@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "fridge-obj-det-model"
+version = "0.1.0"
+description = "Model for detecting objects that can be placed in a fridge"
+authors = ["Dev <dev@microsoft.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.9.12"
+onnxruntime = "1.14.1"
+numpy = "1.24.2"
+pillow = "9.5.0"
+azureml-core = "1.49.0"
+flask = "^2.3.2"
+gunicorn = "20.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

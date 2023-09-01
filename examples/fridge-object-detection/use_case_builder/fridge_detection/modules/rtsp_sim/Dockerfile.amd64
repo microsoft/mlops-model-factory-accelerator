@@ -1,0 +1,2 @@
+FROM mcr.microsoft.com/ava-utilities/rtspsim-live555:1.2
+COPY ./videos/* /live/mediaServer/media/

@@ -1,0 +1,38 @@
+parameters:
+  - name: exec_environment
+    displayName: "Execution Environment"
+  - name: use_case_type
+    displayName: "type of use case to execute"
+  - name: deploy_to_device_target_condition
+    displayName: "deployment target device condition"
+stages: 
+  - stage: "e2e_test"
+    displayName: "Run E2E test"
+    variables:
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/use_case_builder/common/devops/templates/variable_init_for_a_stage.yml
+    dependsOn:
+      - variable_generation
+      - deploy_iot_edge
+    jobs: 
+    - job: trigger_e2e_direct_method
+      steps:
+      - task: AzureCLI@2
+        displayName: "E2E test"
+        inputs:
+          azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          scriptType: 'bash'
+          scriptLocation: 'inlineScript'
+          failOnStandardError: false
+          inlineScript: |
+            cd $(system.DefaultWorkingDirectory)/scripts
+            DEVICE_LIST=$(az iot hub query --hub-name $(IOTHUB_NAME) -g $(IOT_HUB_RESOURCE_GROUP) -q "SELECT deviceId FROM devices WHERE ${{parameters.deploy_to_device_target_condition}}" -o tsv)
+            echo $DEVICE_LIST
+            readarray -t devices <<< "$DEVICE_LIST"
+            e2e_test=$(python3 test_executer.py "${devices[*]}" "E2E_TEST" $(IOTHUB_NAME) $(E2E_TEST_MODULE_NAME) "5001" $(USE_CASE_CONFIG_NAME) $(TEST_DURATION_MINUTES) $(TEST_INTERVAL_MINUTES))
+            echo $e2e_test
+            if echo "$e2e_test" | grep -q "pipeline_run_status=False"; then   
+            echo "E2E test failed"
+            exit 1
+            else   
+            echo "E2E test passed"
+            fi

@@ -1,0 +1,154 @@
+{
+  "$schema-template": "4.0.0",
+  "modulesContent": {
+    "$edgeAgent": {
+      "properties.desired": {
+        "schemaVersion": "1.1",
+        "runtime": {
+          "type": "docker",
+          "settings": {
+            "minDockerVersion": "v1.25",
+            "loggingOptions": "",
+            "registryCredentials": {
+              "devacr": {
+                "username": "${DEV_CONTAINER_REGISTRY_USERNAME}",
+                "password": "${DEV_CONTAINER_REGISTRY_PASSWORD}",
+                "address": "${DEV_CONTAINER_REGISTRY_SERVER}"
+              },
+              "prodacr": {
+                "username": "${PROD_CONTAINER_REGISTRY_USERNAME}",
+                "password": "${PROD_CONTAINER_REGISTRY_PASSWORD}",
+                "address": "${PROD_CONTAINER_REGISTRY_SERVER}"
+              }
+            }
+          }
+        },
+        "systemModules": {
+          "edgeAgent": {
+            "type": "docker",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.4",
+              "createOptions": {}
+            }
+          },
+          "edgeHub": {
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.4",
+              "createOptions": {
+                "HostConfig": {
+                  "PortBindings": {
+                    "5671/tcp": [
+                      {
+                        "HostPort": "5671"
+                      }
+                    ],
+                    "8883/tcp": [
+                      {
+                        "HostPort": "8883"
+                      }
+                    ],
+                    "443/tcp": [
+                      {
+                        "HostPort": "443"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "modules": {
+          "inferencemodule": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "startupOrder": 0,
+            "settings": {
+              "image": "${PROD_CONTAINER_REGISTRY_SERVER}/fridge_obj_det_fasterrcnn_resnet18_fpn_dev_pipelines:20230829.8",
+              "createOptions": {
+                "HostConfig": {
+                  "PortBindings": {
+                    "31311/tcp": [
+                      {
+                        "HostPort": "8081"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "fridgemodule": {
+            "version": "1.${MODULE_VERSION}",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "startupOrder": 2,
+            "settings": {
+              "image": "${DEV_CONTAINER_REGISTRY_SERVER}/${ORCHESTRATOR_MODULE_NAME}:${ORCHESTRATOR_DOCKER_IMAGE_VERSION}",
+              "createOptions": {}
+            },
+            "env": {
+              "CAMERA_PATH": {
+                "value": "${CAMERA_PATH}"
+              },
+              "FRAME_RATE": {
+                "value": "${FRAME_RATE}"
+              },
+              "MODEL_ENDPOINT": {
+                "value": "${MODEL_ENDPOINT}"
+              }
+            }
+          },
+          "rtsp_sim": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "startupOrder": 1,
+            "settings": {
+              "image": "${DEV_CONTAINER_REGISTRY_SERVER}/${RTSP_DOCKER_IMAGE_NAME}:20230830.9",
+              "createOptions": {
+                "HostConfig": {
+                  "Binds": ["/iotedge/storage/:/iotedge/storage/"]
+                }
+              }
+            }
+          },
+          "e2etest": {
+            "version": "1.${MODULE_VERSION}",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "${DEV_CONTAINER_REGISTRY_SERVER}/${E2E_TEST_MODULE_NAME}:${E2E_DOCKER_IMAGE_VERSION}",
+              "createOptions": {
+                "HostConfig": {
+                  "Binds": ["/iotedge/storage/:/iotedge/storage/"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "$edgeHub": {
+      "properties.desired": {
+        "schemaVersion": "1.1",
+        "routes": {
+          "fridgemoduleToIoTHub": "FROM /messages/modules/fridgemodule/outputs/* INTO $upstream",
+          "rtsp_simToIoTHub": "FROM /messages/modules/rtsp_sim/outputs/* INTO $upstream",
+          "e2etestToIoTHub": "FROM /messages/modules/e2etest/outputs/* INTO $upstream"
+        },
+        "storeAndForwardConfiguration": {
+          "timeToLiveSecs": 7200
+        }
+      }
+    }
+  }
+}

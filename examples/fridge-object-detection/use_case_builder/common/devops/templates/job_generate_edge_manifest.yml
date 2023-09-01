@@ -1,0 +1,66 @@
+parameters:
+  - name: use_case_type
+    displayName: "type of use case to execute"
+  - name: deployment_file_name
+    displayName: "Type of deployment manifest to generate"
+    default: "deployment.template.json"
+
+jobs:
+  - job: "Generate_Edge_Deployment_Manifest"
+    displayName: "Generate Layered Edge Deployment Manifest"
+    steps:
+      - task: AzureKeyVault@2
+        continueOnError: false
+        inputs:
+          azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          KeyVaultName: "$(KEYVAULT_NAME)"
+          SecretsFilter: "*"
+          RunAsPreJob: false
+      - task: UsePythonVersion@0
+        displayName: "install python 3.8"
+        continueOnError: false
+        inputs:
+          versionSpec: "3.8"
+      - task: Bash@3
+        displayName: Add Azure IoT Extensions
+        inputs:
+          targetType: "inline"
+          script: "pip install -U pyOpenSSL==22.0.0"
+      - script: |
+          echo "##vso[task.setvariable variable=APPLICATIONINSIGHTS_CONNECTION_STRING]$(applicationinsights-connection-string)"
+          echo "##vso[task.setvariable variable=DEV_CONTAINER_REGISTRY_USERNAME]$(registry-username-dev)"
+          echo "##vso[task.setvariable variable=DEV_CONTAINER_REGISTRY_PASSWORD]$(registry-password-dev)"
+          echo "##vso[task.setvariable variable=DEV_CONTAINER_REGISTRY_SERVER]$(registry-uri-dev)"
+          echo "##vso[task.setvariable variable=PROD_CONTAINER_REGISTRY_USERNAME]$(registry-username-prod)"
+          echo "##vso[task.setvariable variable=PROD_CONTAINER_REGISTRY_PASSWORD]$(registry-password-prod)"
+          echo "##vso[task.setvariable variable=PROD_CONTAINER_REGISTRY_SERVER]$(registry-uri-prod)"
+          echo "##vso[task.setvariable variable=BLOB_MODULE_CLOUD_STORAGE_CONNECTION_STRING]$(blob-module-cloud-storage-connection-string)"
+          echo "##vso[task.setvariable variable=ORCHESTRATOR_MODULE_NAME]$(ORCHESTRATOR_MODULE_NAME)"
+          echo "##vso[task.setvariable variable=ORCHESTRATOR_DOCKER_IMAGE_VERSION]$(ORCHESTRATOR_DOCKER_IMAGE_VERSION)"
+          echo "##vso[task.setvariable variable=RTSP_MODULE_NAME]$(RTSP_MODULE_NAME)"
+          echo "##vso[task.setvariable variable=RTSP_DOCKER_IMAGE_VERSION]$(RTSP_DOCKER_IMAGE_VERSION)"
+          echo "##vso[task.setvariable variable=E2E_TEST_MODULE_NAME]$(E2E_TEST_MODULE_NAME)"
+          echo "##vso[task.setvariable variable=E2E_DOCKER_IMAGE_VERSION]$(E2E_DOCKER_IMAGE_VERSION)"
+          echo "##vso[task.setvariable variable=MODULE_VERSION]$(Build.BuildNumber)"
+        displayName: Get image information from module.json
+      - task: CopyFiles@2
+        displayName: Copy Edge Deployment Manifest
+        inputs:
+          contents: ${{parameters.deployment_file_name}}
+          targetFolder: $(Build.ArtifactStagingDirectory)/edgeconfig
+          cleanTargetFolder: true
+          sourceFolder: $(System.DefaultWorkingDirectory)/use_case_builder/${{parameters.use_case_type}}
+      - task: replacetokens@3
+        displayName: "Replace tokens in *.config *.json"
+        inputs:
+          targetFiles: "$(Build.ArtifactStagingDirectory)/edgeconfig/${{parameters.deployment_file_name}}"
+          verbosity: detailed
+          tokenPrefix: "${"
+          tokenSuffix: "}"
+          keepToken:variables: true
+
+      - task: PublishBuildArtifacts@1
+        displayName: Publish Manifest To Artifacts
+        inputs:
+          pathToPublish: $(Build.ArtifactStagingDirectory)
+          artifactName: DeploymentManifest

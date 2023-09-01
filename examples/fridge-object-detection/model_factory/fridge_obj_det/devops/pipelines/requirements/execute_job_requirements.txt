@@ -1,0 +1,5 @@
+azure-cli==2.47.0
+azure-ai-ml==1.9.0
+azure-identity==1.13.0
+azure-keyvault-secrets==4.7.0
+requests==2.25.1

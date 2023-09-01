@@ -1,0 +1,94 @@
+parameters:
+  - name: exec_environment
+    displayName: "Execution Environment"
+    default: "dev"
+  - name: model_type
+    displayName: "type of model to execute"
+  - name: dependencies
+    default: ""
+  - name: model_name
+    displayName: "model name"
+    default: $(MODEL_NAME)
+
+jobs:
+  - job: build_docker_image
+    dependsOn: ${{ parameters.dependencies }}
+    steps:
+      - task: UsePythonVersion@0
+        displayName: "install python 3.8"
+        continueOnError: false
+        inputs:
+          versionSpec: "3.8"
+
+      - task: AzureKeyVault@2
+        continueOnError: false
+        inputs:
+          azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          KeyVaultName: $(KEYVAULT_NAME)
+          SecretsFilter: "*"
+          RunAsPreJob: false
+
+      - script: |
+          python -m venv env
+        displayName: "Create Virtual env"
+
+      - task: AzureCLI@2
+        displayName: "setup the build server"
+        continueOnError: false
+        inputs:
+          azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          scriptType: bash
+          workingDirectory: $(system.DefaultWorkingDirectory)
+          scriptLocation: inlineScript
+          inlineScript: |
+            source env/bin/activate
+            python -m pip install --upgrade pip
+            pip install -r model_factory/${{parameters.model_type}}/devops/pipelines/requirements/execute_job_requirements.txt
+            az extension add -n ml -y
+            az upgrade --yes
+            az config set extension.use_dynamic_install=yes_without_prompt
+
+      - task: AzureCLI@2
+        displayName: Download Model artifacts from AzureML Model Registry
+        continueOnError: false
+        inputs:
+          azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+          scriptType: bash
+          scriptLocation: inlineScript
+          workingDirectory: $(system.DefaultWorkingDirectory)
+          inlineScript: |
+            set -e # fail on error
+            source env/bin/activate
+            az ml model download --name ${{parameters.model_name}} --version $(az ml model list --name ${{parameters.model_name}}  --resource-group $(RESOURCE_GROUP_NAME)  --workspace-name $(WORKSPACE_NAME) --query "[0].version" --output tsv) --download-path model_factory/${{parameters.model_type}}/model/model_download  -g $(RESOURCE_GROUP_NAME) -w $(WORKSPACE_NAME)
+            tar -xvzf model_factory/${{parameters.model_type}}/model/model_download/${{parameters.model_name}}/model_artifacts.tar.gz -C model_factory/${{parameters.model_type}}/model/model_artifacts
+
+      - script: |
+          cd $(system.DefaultWorkingDirectory)
+          npm install 
+          cd $(system.DefaultWorkingDirectory)/model_factory/${{parameters.model_type}}
+          DEFAULT_VERSION="latest"
+          npm run version 2> fail
+          if [ -s "fail" ]; then
+              cat fail
+              echo "Semantic release failed"
+              exit 1
+          else
+            if [ -e ".VERSION" ]; then
+              NEXT_RELEASE=$(cat .VERSION)
+              echo $NEXT_RELEASE
+              cd $(system.DefaultWorkingDirectory)/model_factory/${{parameters.model_type}}/model
+              ls
+              set -e # fail on error
+              docker buildx use mybuilder
+              docker buildx inspect --bootstrap
+              docker login "$(ACR_URL)" -u "$(ACR_USERNAME)" -p "$(ACR_PASSWORD)" 
+              docker buildx build --platform linux/arm64 -t $(ACR_URL)/$(MODEL_NAME):$NEXT_RELEASE -t $(ACR_URL)/$(ML_MODEL_CONFIG_NAME):$DEFAULT_VERSION . --push
+              echo "##vso[task.setvariable variable=ML_MODEL_SEMANTIC_VERSION;isOutput=true]$NEXT_RELEASE"
+            else 
+              echo "##vso[task.setvariable variable=ML_MODEL_SEMANTIC_VERSION;isOutput=true]$DEFAULT_VERSION"
+            fi
+          fi
+        env:
+          GIT_CREDENTIALS: $(System.AccessToken)
+        name: build_and_push_model_image
+        displayName: Build and Push Model image
