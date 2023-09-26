@@ -8,26 +8,28 @@ In order to setup the repository, you need to complete few steps.
 
 **Step 2.** Create a new variable group mlops_platform_dev_vg and add "service_connection" variable with the same name used in step 1. Update the model_config.json file in config folder for each model in model factory .
 
-- EXPERIMENT_BASE_NAME: an experiment base name. This parameter as well as two more parameters below we are using as a background to form unique names for experiments, runs and models. You can find a rule for the names implemented as powershell code in [here](../devops/pipeline/templates/variables_template.yml). By default we are using the branch name as well as build id to form the names that helps us to differentiate experiments, runs and models working in a big team of data scientists and software engineers. The EXPERIMENT_TYPE variable from the template is hard coded in _dev_pipeline.yml files.
-- DISPLAY_BASE_NAME: a run base name (see EXPERIMENT_BASE_NAME for details).
-- MODEL_BASE_NAME: a model base name (see EXPERIMENT_BASE_NAME for details).
 - AZURE_RM_SVC_CONNECTION: the service connection name from the previous step.
-- WORKSPACE_NAME: an Azure ML workspace name.
-- RESOURCE_GROUP_NAME: a resource group where Azure Ml Workspace is located.
-- CLUSTER_NAME: an Azure ML compute cluster name to start jobs.
-- CLUSTER_SIZE: a size of the cluster in Azure ML to start jobs.
-- CLUSTER_REGION: a location/region where the cluster should be created.
-- ENVIRONMENT_NAME: a name of the Azure ML environment.
-- ENV_BASE_IMAGE_NAME: a base image for the environment (ex.: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04).
-- CONDA_PATH: a location of the conda file (mlops/nyc_taxi/environment/conda.yml).
-- KEYVAULT_NAME: A KeyVault resource name
 
 Information about variable groups in Azure DevOps can be found in [this document](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic).
 
-**Step 3.** Setup Azure Key Vault resource. The pipeline uses three secrets from key Vault and they should be created before running the pipeline. The values for these secrets can be obtained from Azure Container Registry resource. The secrets are named
-- registry-uri
-- registry-username
-- registry-password
+**Step 3.** Setup variables in model_config.json file. The pipeline uses multiple variables and they should be set for both 'pr' and 'dev' plus additional environments.
+
+- ML_MODEL_CONFIG_NAME: The unique model name used internally by the pipelines.
+- ENV_NAME: name of the environment. e.g pr, dev, test, prod.
+- AZURE_RM_SVC_CONNECTION: the name of service connection configured in Azure DevOps.
+- CLUSTER_NAME: an Azure ML compute cluster name to start jobs.
+- CLUSTER_SIZE: a size of the cluster in Azure ML to start jobs.
+- CLUSTER_REGION: a location/region where the cluster should be created.
+- CONDA_PATH: a location of the conda file (mlops/nyc_taxi/environment/conda.yml).
+- DISPLAY_BASE_NAME: a run base name (see EXPERIMENT_BASE_NAME for details).
+- ENV_BASE_IMAGE_NAME: a base image for the environment (ex.: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04).
+- ENVIRONMENT_NAME: a name of the Azure ML environment.
+- EXPERIMENT_BASE_NAME: an experiment base name. This parameter as well as two more parameters below we are using as a background to form unique names for experiments, runs and models. You can find a rule for the names implemented as powershell code in [here](../devops/pipeline/templates/variables_template.yml). By default we are using the branch name as well as build id to form the names that helps us to differentiate experiments, runs and models working in a big team of data scientists and software engineers. The EXPERIMENT_TYPE variable from the template is hard coded in _dev_pipeline.yml files.
+- KEYVAULT_NAME: name of keyvault for storing secrets.
+- MODEL_BASE_NAME: a model base name (see EXPERIMENT_BASE_NAME for details).
+- RESOURCE_GROUP_NAME: a resource group where Azure Ml Workspace is located.
+- WORKSPACE_NAME: an Azure ML workspace name.
+
 
 **Step 4.** Create a *development* branch and make it as default one to make sure that all PRs should go towards to it. This workflow assumes that the team works at a *development* branch as a primary source for coding and improving the model quality. Later, you can implement Azure Pipeline that mode code from the *development* branch into qa/main or execute a release process right away. 
 
