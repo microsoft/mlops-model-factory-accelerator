@@ -6,9 +6,9 @@ In order to setup the repository, you need to complete few steps.
 
 **Step 1.** Create a service connection in Azure DevOps. You can use [this document](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml) as a reference. Use Azure Resource Manager as a type of the service connection. This service connection should be configured at multiple places - Azure DevOps, Key Vault, Azure subscription/resource group.
 
-**Step 2.** Create a new variable group mlops_platform_dev_vg and add "service_connection" variable with the same name used in step 1. Update the model_config.json file in config folder for each model in model factory .
+**Step 2.** Create a new variable group mlops_platform_dev_vg and add a variable called "AZURE_RM_SVC_CONNECTION". Set the value of this variable to the name used for the service connection in step 1. 
 
-- AZURE_RM_SVC_CONNECTION: the service connection name from the previous step.
+Update the model_config.json file in config folder for each model in model factory .
 
 Information about variable groups in Azure DevOps can be found in [this document](https://learn.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic).
 
