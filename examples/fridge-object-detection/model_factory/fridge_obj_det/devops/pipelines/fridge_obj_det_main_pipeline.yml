@@ -59,9 +59,8 @@ stages:
       variables:
         - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/experiment_variables.yml
       jobs:
-        - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/image_generation_semantic_version.yml
+        - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/image_generation_template.yml
           parameters:
             exec_environment: ${{parameters.exec_environment}}
             model_type: ${{parameters.model_type}}
             model_name: "${{parameters.model_type}}_prod_master"
-        # push to prod acr

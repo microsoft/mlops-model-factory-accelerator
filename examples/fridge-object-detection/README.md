@@ -2,14 +2,12 @@
 
 ## Context
 
-This is a sample implementation of the model factory and the usecase builder.
+This is a sample implementation of the model factory.
 
 ## Design and Architecture
 
-- [Conceptual architecture of Model factory and Usecase builder](docs/01-conceptual-architecture.md)
-- [Design of the Model factory](docs/02-model-factory-design.md)
-- [Design of the Usecase builder](docs/03-use-case-builder.md)
+- [Design of the Model factory](docs/01-model-factory-design.md)
 
 ## How to use this sample
 
-- [Instructions to use this sample](docs/04-instructions.md)
+- [Instructions to use this sample](docs/02-instructions.md)

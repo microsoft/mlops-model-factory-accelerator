@@ -1,6 +1,0 @@
-{
-    "name": "fridgemodule",
-    "scripts": {
-        "version": "semantic-release"
-      }
-}

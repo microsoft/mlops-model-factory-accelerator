@@ -56,15 +56,3 @@ The above diagram depicts the development workflow of model factory. At a high l
 1. Data Science team validates the model metrics after which the code is push to prod env where pipelines execute basic tests and also perform smoke test on the IoTEdge device.
 1. Once all steps are successful there is final Gated approval check which allows pushing of these images into prod ACR.
 
-## Model Factory development sequence diagram
-
-![branching strategy](/docs/assets/images/deployment_sequence_diagram.jpg)
-
-The above diagram depicts the model factory sequence diagram. Here are the steps followed:
-
-1. For each model a feature branch is created. This feature branch is protected by branch policies. Data scientist working on model, creates a user branch to perform local development, and creates a PR to the feature branch, which triggers PR validation pipeline.
-1. PR merge to feature branch triggers CI pipelines which performs tasks like linting/unit testing. It also executes AML pipelines which train and register model, build docker images and pushes them to dev ACR. Multiple PR merges to feature branch can cause multiple execution on AML pipelines, which can incur more cost. Based on the workflow, we can optimize this step by using following approaches
-    1. Reduce the size of training dataset.
-    1. Set epoch number to 1 to limit the model training to loop through dataset only once.
-    1. Run model training scheduled once in a day(nightly).
-1. Once feature branch is validated and tested, user creates PR to main branch which performs more elaborate tasks like running smoke test on the smoke test edge device. After this, PR is merge to main branch. From main branch pipeline can be triggered manually, which pushes docker images to prod ACR.

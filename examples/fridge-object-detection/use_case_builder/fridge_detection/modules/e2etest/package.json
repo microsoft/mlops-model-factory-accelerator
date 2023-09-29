@@ -1,6 +1,0 @@
-{
-    "name": "e2etest",
-    "scripts": {
-        "version": "semantic-release"
-      }
-}

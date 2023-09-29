@@ -1,6 +1,0 @@
-{
-    "name": "rtsp_sim",
-    "scripts": {
-        "version": "semantic-release"
-      }
-}
