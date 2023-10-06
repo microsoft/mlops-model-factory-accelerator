@@ -153,7 +153,7 @@ def execute_pipeline(
                     time.sleep(20)
                     pipeline_job = client.jobs.get(pipeline_job.name)
 
-                    logger.info("Job Status:", pipeline_job.status)
+                    logger.info(f"Job Status: {pipeline_job.status}")
 
                     current_wait_time = current_wait_time + 15
 
