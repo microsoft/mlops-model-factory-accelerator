@@ -1,34 +1,9 @@
-# Case Study – “Accelerating ML Model Development and Deployment on the edge with the Machine Learning Model Factory”
+# Case Study – “Accelerating ML Model Development and Deployment on the edge using MLOps Model Factory Accelerator”
 
-
-## Table of Contents
-* [Purpose](#purpose)
-* [Customer Overview](#customer_overview)
-* [Problem Statement](#problem_statement)
-* [Solution Overview](#solution_overview)
-     * [Machine Learning Factory Model](machine_learning_factory_model)
-     * [Use Case Builder](use_case_builder)
-     * [Use Case Deployment](use_case_deployment)
-* [Technical Implementation](technical_implementation)
-     * [Model Factory Design](model_factory_design)
-     * [Use Case Builder Design](use_case_builder_design)
-     * [Data Collection on the Edge Design](data_collection_on_the_edge_design)
-     * [Deployment Size Optimizations for Constrained Network](deployment_size_optimizations_for_constrained_network)
-        * [Orchestrated Inferencing](Orchestrated_Inferencing)
-        * [Docker image optimizations](Docker_image_optimizations)
-     * [Deployment Size Reduction Data](Deployment_Size_Reduction_Data)
- * [Conclusion](conclusion)
- * [References](references)
-
-<!-- You can include any other section that is pertinent to your problem -->
-### Document Control:
-|     Document Version Details             |     Author(s)              |     Reviewer(s)    |     Date          |
-|------------------------------------------|----------------------------|--------------------|-------------------|
-|     Version 1.0 –   Detailed document    |     Sarita Behera          |     Vivek Soni     |     21st   Sep    |
 
 ## Purpose
-This document depicts a real-world case study on how implementing a model factory enabled the customer, a large Telco company, to revolutionize its services by addressing challenges related to speed and agility in building and deploying machine learning models at scale.
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
+This document depicts a real-world case study on how implementing a model factory enabling a large Telco customer, to revolutionize its services by addressing challenges related to speed and agility in building and deploying machine learning models at scale.
+
 
 ## Customer Overview
 A large Telco company has expanded its services to B2B customers with a data-driven analytics product focused on tracking the movement of objects and their presence in various environments. This solution utilizes cameras, edge computing, artificial intelligence, machine learning, and data analytics to provide valuable insights into the utilization of open spaces, infrastructure. These insights facilitate cost-effective and real-time planning decisions. 
@@ -36,13 +11,10 @@ A large Telco company has expanded its services to B2B customers with a data-dri
 The company aims to broaden its product's applicability across industries, offering services like Computer Vision as a Service, leveraging their telco infrastructure while ensuring compatibility with low-bandwidth scenarios. Their target markets range from cross industries to novel applications, necessitating rapid deployment and scalable automation for success.
 
 
-<!-- You don't have to answer all the questions - just the ones relevant to your project. -->
-
-
 ## Problem Statement
 The existing product has limitations making it challenging to scale the solution and quickly support new scenarios and customers.  
 
-![image](/docs/images/ProblemStatement_FishBone.jpg)
+![image](/docs/images/ProblemStatement_FishBone.png)
 
 <ins> Problem Areas Associated with the Broader Problem Statement: </ins>
 - <ins>A)	Model Generation:</ins> The extended turnaround time required for creation and updates of machine learning models hinders the ability to onboard new use cases or updating the existing ones. Absence of robust performance evaluation mechanisms for models adds complexity, making it difficult to assess and improve model effectiveness.
@@ -59,15 +31,13 @@ The existing product has limitations making it challenging to scale the solution
 
 
 
-<!-- As the libraries versions keep on changing, it is recommended to mention the version of library used in this project -->
-
 ## Solution Overview
 To address these key challenges, the existing architecture has been revamped & reimagined by decoupling the model generation, from the business use case development and deployment process. This newer approach focuses on building a framework which can generate end-to-end machine learning use case with speed and agility.
 Technically, a ML use case can be defined as: A combination of single or multiple machine learning models coupled together by an orchestration mechanism to address a specific business problem.
 
 The conceptual design has 3 key components which function together to generate and deliver use cases to the target edge devices.
 
-![image](/docs/images/ConceptualDesign.jpg)
+![image](/docs/images/ConceptualDesign.png)
 
 - #### <ins>Machine Learning Model Factory:</ins>
   - The ML Model factory address the challenges around Model Generation by streamlining the process of generating and managing machine learning models. It enables the data scientist and ML engineers collaborate to develop, package, and manage the ML models at scale, while following the standard MLOps practices.
@@ -79,6 +49,7 @@ The conceptual design has 3 key components which function together to generate a
    - Use case deployment enables rolling full and incremental deployments of the published use case to the edge devices leveraging the native IoT Edge capabilities.
    - **Due to the customer's well-established maturity in edge deployment processes, this component will be developed by the customer and would seamlessly integrate with the Use Case builder to provide an end-to-end deployment experience.
 
+
 ## Technical Implementation
 The following section provided an high-level overview of the key solution components.
 ### Model Factory Design
@@ -89,7 +60,7 @@ MLOps pipelines built on top of Azure Machine Learning at its core are responsib
 DevOps pipelines built on top of Azure DevOps are responsible for packaging the trained ML models into Docker containers and facilitating their deployment across multiple environments.
 
 The workflow of a model from a developer environment to a production container registry is depicted below. This also depicts various validation checks that are enforced in various stages of the workflow. 
- ![image](/docs/images/MLModelFactory_Design.jpg)
+ ![image](/docs/images/MLModelFactory_Design.png)
 
 #### Key Features
 •	Supports generation of multiple ML Models
@@ -98,14 +69,14 @@ The workflow of a model from a developer environment to a production container r
 •	Model verification before storing the Docker image
 •	All Docker images are stored in Azure Container Registry
 •	Builds and deploys Smoke Test module on Edge device
-•	Based on Azure ML SDK v2 1.4 and IoT Edge runtime 1.4
+
 ### Use Case Builder Design 
 Use case builder provides a convention based approach to enable the developers to build and manage multiple use-cases across different environments. The framework provides the ability to create a single deployment manifest that bundles one or more ML models along the orchestration layer to server an end to end use case.
 
 At its core, the Use Case Builder leverages Azure IoT Edge and Azure DevOps pipelines to allow the developers build and integration test the orchestration layer in conjunction with the dependent ML Models on the targeted edge devices.
 
 The workflow of Use Case Builder from a developer environment to a production container registry is depicted below .
-  ![image](/docs/images/UseCaseBuilder_Design.jpg)
+  ![image](/docs/images/UseCaseBuilder_Design.png)
 #### Key Features
 •	Bundles model reference and orchestration layer into a single deployable entity based on the business scenario.
 •	DevOps pipeline templates for the use-cases to build, test and publish artifacts.
@@ -116,7 +87,7 @@ The workflow of Use Case Builder from a developer environment to a production co
 Data Collection on the Edge component enables the customer to have a secure and automated process for data collection (images) from the edge devices, and use those images as a source for subsequent model training (post annotation).
 This component leverages [Azure Blob Storage IoT Edge](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-store-data-blob?view=iotedge-1.4) modules at its core to provides a low-code mechanism for the edge devices to push binary data to remote azure blob storage accounts.
  
- ![image](/docs/images/DataCollection_Design.jpg)
+ ![image](/docs/images/DataCollection_Design.png)
 
 #### Key Features
 - A no-code low-code solution which can be quickly setup to automate data collection on edge.
@@ -127,7 +98,7 @@ This component leverages [Azure Blob Storage IoT Edge](https://learn.microsoft.c
 To address key challenges around heavy edge images leading to exponential deployments (caused by multiple failures), lack of support for limited network bandwidth and high network cost, a two-stage approach was implemented.
 #### <ins>1.	Orchestrated Inferencing :</ins> The concept of Orchestrated inferencing was introduced which dictate the design based on decoupling the ML models and orchestration logic into separate docker containers. 
 
- ![image](/docs/images/Orchestrated_Inferencing.jpg)
+ ![image](/docs/images/Orchestrated_Inferencing.png)
 
 This decouple design resulted into multiple benefits:- 
 -	Support for selective ML model deployment instead of bundling all ML models and orchestration logic into a single bulky image.
@@ -155,12 +126,7 @@ The solution implemented for the customer has not only streamlined their ML mode
 -	[MLOps Accelerator for Edge](https://github.com/microsoft/mlops-accelerator-for-edge)
 
 
-## Contact
-Created by [Sarita Behera](@saritab07), [Vivek Soni](@erviveksoni) - feel free to contact!
 
 
-<!-- Optional -->
-<!-- ## License -->
-<!-- This project is open source and available under the [... License](). -->
 
-<!-- You don't have to include all sections - just the one's relevant to your project -->
+
