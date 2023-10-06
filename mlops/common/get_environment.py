@@ -2,6 +2,9 @@ from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
 import argparse
 from azure.ai.ml.entities import Environment
+from mlops.common.logger import get_logger
+
+logger = get_logger()
 
 
 def get_environment(
@@ -14,7 +17,7 @@ def get_environment(
     description: str,
 ):
     try:
-        print(f"Checking {environment_name} environment.")
+        logger.info(f"Checking {environment_name} environment.")
         client = MLClient(
             DefaultAzureCredential(),
             subscription_id=subscription_id,
@@ -28,11 +31,11 @@ def get_environment(
             description=description,
         )
         environment = client.environments.create_or_update(env_docker_conda)
-        print(f"Environment {environment_name} has been created or updated.")
+        logger.info(f"Environment {environment_name} has been created or updated.")
         return environment
 
     except Exception as ex:
-        print(
+        logger.exception(
             "Oops! invalid credentials or error while creating ML environment.. Try again..."
         )
         raise

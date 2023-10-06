@@ -7,7 +7,9 @@ import time
 import os
 from mlops.common.get_compute import get_compute
 from mlops.common.get_environment import get_environment
+from mlops.common.logger import get_logger
 
+logger = get_logger("mlops_nyc_taxi_pipeline")
 
 gl_pipeline_components = []
 
@@ -124,7 +126,7 @@ def execute_pipeline(
             pipeline_job, experiment_name=experiment_name
         )
 
-        print(f"The job {pipeline_job.name} has been submitted!")
+        logger.info(f"The job {pipeline_job.name} has been submitted!")
         if output_file is not None:
             with open(output_file, "w") as out_file:
                 out_file.write(pipeline_job.name)
@@ -151,7 +153,7 @@ def execute_pipeline(
                     time.sleep(20)
                     pipeline_job = client.jobs.get(pipeline_job.name)
 
-                    print("Job Status:", pipeline_job.status)
+                    logger.info(f"Job Status: {pipeline_job.status}")
 
                     current_wait_time = current_wait_time + 15
 
@@ -166,11 +168,11 @@ def execute_pipeline(
                     break
 
             if pipeline_job.status == "Completed" or pipeline_job.status == "Finished":
-                print("job completed")
+                logger.info("job completed")
             else:
                 raise Exception("Sorry, exiting job with failure..")
     except Exception as ex:
-        print(
+        logger.exception(
             "Oops! invalid credentials or error while creating ML environment.. Try again..."
         )
         raise
@@ -220,7 +222,7 @@ def prepare_and_execute(
         env_description,
     )
 
-    print(f"Environment: {environment.name}, version: {environment.version}")
+    logger.info(f"Environment: {environment.name}, version: {environment.version}")
 
     pipeline_job = construct_pipeline(
         compute.name,

@@ -5,7 +5,9 @@ from datetime import datetime
 import os
 import pandas as pd
 import numpy as np
+from mlops.common.logger import get_logger
 
+logger = get_logger("london_taxi_transform")
 
 def main(clean_data, transformed_data):
     lines = [
@@ -15,15 +17,15 @@ def main(clean_data, transformed_data):
 
 
     for line in lines:
-        print(line)
+        logger.info(line)
 
-    print("mounted_path files: ")
+    logger.info("mounted_path files: ")
     arr = os.listdir(clean_data)
-    print(arr)
+    logger.info(arr)
 
     df_list = []
     for filename in arr:
-        print("reading file: %s ..." % filename)
+        logger.info("reading file: %s ..." % filename)
         with open(os.path.join(clean_data, filename), "r") as handle:
             input_df = pd.read_csv((Path(clean_data) / filename))
             df_list.append(input_df)
@@ -113,8 +115,8 @@ def transform_data(combined_df):
 
     normalized_df.reset_index(inplace=True, drop=True)
 
-    print(normalized_df.head)
-    print(normalized_df.dtypes)
+    logger.info(normalized_df.head)
+    logger.info(normalized_df.dtypes)
 
     # Drop the pickup_date, dropoff_date, pickup_time, dropoff_time columns because they're
     # no longer needed (granular time features like hour,
@@ -137,7 +139,7 @@ def transform_data(combined_df):
 
     final_df = normalized_df[(normalized_df.distance > 0) & (normalized_df.cost > 0)]
     final_df.reset_index(inplace=True, drop=True)
-    print(final_df.head)
+    logger.info(final_df.head)
 
     return final_df
 

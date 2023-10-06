@@ -4,6 +4,9 @@ import os
 import json
 from pathlib import Path
 
+from mlops.common.logger import get_logger
+
+logger = get_logger("nyc_taxi_register")
 
 def main(model_metadata, model_name, score_report, build_reference):
     try:
@@ -36,9 +39,9 @@ def main(model_metadata, model_name, score_report, build_reference):
             value=build_reference,
         )
 
-        print(model_version)
+        logger.info(model_version)
     except Exception as ex:
-        print(ex)
+        logger.info(ex)
         raise
     finally:
         run_file.close()
@@ -61,9 +64,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    print(args.model_metadata)
-    print(args.model_name)
-    print(args.score_report)
-    print(args.build_reference)
+    logger.info(args.model_metadata)
+    logger.info(args.model_name)
+    logger.info(args.score_report)
+    logger.info(args.build_reference)
 
     main(args.model_metadata, args.model_name, args.score_report, args.build_reference)
