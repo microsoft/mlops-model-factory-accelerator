@@ -12,7 +12,6 @@ Following azure resources are required to run this sample:
     1. Azure Keyvault
     1. Azure Blob Storage
 1. Azure Container Registry
-1. Azure IotHub
 1. Azure VM: It will be used for smoke test.
 1. Azure VM: It will be used for e2e test.
 1. Azure Devops
@@ -22,8 +21,6 @@ Following azure resources are required to run this sample:
 
 1. Provision Azure AML workspace.
 1. Provision Azure Container registry.
-1. Provision Azure IoTHub.
-1. Provision two Azure VMs using [this ARM template](https://github.com/Azure/iotedge-vm-deploy), so that they be used IoTEdge Device.
 1. Create Service Connection in Azure Devops providing access to resource group.
 1. Create two variable groups in Azure Devops
     1. mlops_platform_dev_vg
@@ -57,28 +54,13 @@ Following azure resources are required to run this sample:
     1. registry-username-prod: Prod ACR username
     1. registry-password-prod: Prod ACR password
 1. Update model_config(`model_factory\fridge_obj_det\config\model_config.json`) with required values.
-1. Update use_case_config.json(`use_case_builder\fridge_detection\use_case_config.json`) with required values.
 1. Create Azure Pipelines using following yaml files.
     1. Model factory Pipelines:
         1. fridge_obj_det_dev_pipeline: `model_factory\fridge_obj_det\devops\pipelines\fridge_obj_det_dev_pipeline.yml`
         1. fridge_obj_det_main_pipeline:
     `model_factory\fridge_obj_det\devops\pipelines\fridge_obj_det_main_pipeline.yml`
-    1. Use case builder pipelines:
-        1. fridge_dev_pipeline:
-    `use_case_builder\fridge_detection\devops\pipelines\fridge_dev_pipeline.yml`
-        1. fridge_main_ci_pipeline:
-    `use_case_builder\fridge_detection\devops\pipelines\fridge_main_ci_pipeline.yml`
-        1. fridge_main_pr_pipeline:
-    `use_case_builder\fridge_detection\devops\pipelines\fridge_main_pr_pipeline.yml`
-    1. RTSP builder pipeline:
-       1. rtsp_builder_pipeline: `use_case_builder\common\devops\pipelines\pipeline_rtsp_builder.yml`
 
 1. Execution of pipelines
     1. Model Factory Pipelines:  
        - Model factory dev pipeline executes AML pipelines and creates model container docker image and pushes it to ACR.  
-       - Model factory main pipeline executes AML pipeline, creates docker image, performs smoke test on edge device and pushes image to ACR.
-    2. Use case builder pipelines:
-       - Use case builder dev pipeline perform validations, builds docker image for the orchestration container, pushes it to ACR, performs deployment to the e2e test device and runs e2e test.
-       - Use case builder main ci pipeline will build docker image, and creates a deployment manifest for the deployment.
-    3. RTSP builder pipeline:
-       - This sample uses RTSP Simulator for e2etest. This pipeline will build RTSP simulator docker image and pushes it to ACR.
+       - Model factory main pipeline executes AML pipeline, creates docker image, and pushes image to ACR.

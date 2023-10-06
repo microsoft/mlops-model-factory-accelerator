@@ -14,7 +14,7 @@ The model factory is a system that automates the end-to-end process of developin
 - Model verification before storing the Docker image.  
 - All Docker images are stored in Azure Container Registry.  
 - Builds and deploys Smoke Test module on Edge device.  
-- Based on Azure ML SDK v2 1.4 and IoT Edge runtime 1.4.  
+- Based on Azure ML SDK v2 1.4
 
 ## Architecture
 
@@ -53,6 +53,5 @@ The above diagram depicts the development workflow of model factory. At a high l
 1. Data Science team works on development of model on local machine using VSCode remote extension or on AML workspace. This development is generally done in Jupyter notebook.
 1. Once the model is ready and is tested, code from notebooks is brought into `src` folder for that model.
 1. Code is then pushed to dev environment, where MLOps and DevOps pipelines are built and triggered which helps in automating the generation of ML models and pushing ML model docker containers images the dev ACR.
-1. Data Science team validates the model metrics after which the code is push to prod env where pipelines execute basic tests and also perform smoke test on the IoTEdge device.
+1. Data Science team validates the model metrics after which the code is push to prod env where pipelines execute basic tests.
 1. Once all steps are successful there is final Gated approval check which allows pushing of these images into prod ACR.
-
