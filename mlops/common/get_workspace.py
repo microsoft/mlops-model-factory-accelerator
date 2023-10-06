@@ -1,11 +1,13 @@
 from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
 import argparse
+from mlops.common.logger import get_logger
 
+logger = get_logger()
 
 def get_workspace(subscription_id: str, resource_group_name: str, workspace_name: str):
     try:
-        print(f"Getting access to {workspace_name} workspace.")
+        logger.info(f"Getting access to {workspace_name} workspace.")
         client = MLClient(
             DefaultAzureCredential(),
             subscription_id=subscription_id,
@@ -14,10 +16,10 @@ def get_workspace(subscription_id: str, resource_group_name: str, workspace_name
         )
 
         workspace = client.workspaces.get(workspace_name)
-        print(f"Reference to {workspace_name} has been obtained.")
+        logger.info(f"Reference to {workspace_name} has been obtained.")
         return workspace
     except Exception as ex:
-        print("Oops!  invalid credentials.. Try again...")
+        logger.exception("Oops!  invalid credentials.. Try again...")
         raise
 
 

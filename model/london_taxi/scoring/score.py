@@ -1,10 +1,12 @@
 import os
-import logging
 import json
 import numpy
 import joblib
 import csv
 import datetime
+from mlops.common.logger import get_logger
+
+logger = get_logger("london_taxi_score")
 
 def init():
     """
@@ -20,7 +22,7 @@ def init():
     )
     # deserialize the model file back into a sklearn model
     model = joblib.load(model_path)
-    logging.info("Init complete")
+    logger.info("Init complete")
 
 
 def run(raw_data):
@@ -35,7 +37,7 @@ def run(raw_data):
         os.makedirs(folder_path)
     csv_input_path = f"{folder_path}/input.csv"
     csv_output_path = f"{folder_path}/output.csv"
-    logging.info("model 1: request received")
+    logger.info("model 1: request received")
     data = json.loads(raw_data)["data"]
     data = numpy.array(data)
     numpy.savetxt(csv_input_path, data, delimiter=",")
@@ -43,5 +45,5 @@ def run(raw_data):
     result = model.predict(data)
 
     numpy.savetxt(csv_output_path, result, delimiter=",")
-    logging.info("Request processed")
+    logger.info("Request processed")
     return result.tolist()

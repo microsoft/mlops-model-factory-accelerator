@@ -2,7 +2,9 @@ from azure.ai.ml import MLClient
 from azure.identity import DefaultAzureCredential
 import argparse
 from azure.ai.ml.entities import AmlCompute
+from mlops.common.logger import get_logger
 
+logger = get_logger()
 
 def get_compute(
     subscription_id: str,
@@ -25,9 +27,9 @@ def get_compute(
         )
         try:
             compute_object = client.compute.get(cluster_name)
-            print(f"Found existing compute target {cluster_name}, so using it.")
+            logger.info(f"Found existing compute target {cluster_name}, so using it.")
         except:
-            print(f"{cluster_name} is not found! Trying to create a new one.")
+            logger.info(f"{cluster_name} is not found! Trying to create a new one.")
             compute_object = AmlCompute(
                 name=cluster_name,
                 type="amlcompute",
@@ -40,9 +42,9 @@ def get_compute(
             compute_object = client.compute.begin_create_or_update(
                 compute_object
             ).result()
-            print(f"A new cluster {cluster_name} has been created.")
+            logger.info(f"A new cluster {cluster_name} has been created.")
     except Exception as ex:
-        print("Oops!  invalid credentials.. Try again...")
+        logger.exception("Oops!  invalid credentials.. Try again...")
         raise
     return compute_object
 
