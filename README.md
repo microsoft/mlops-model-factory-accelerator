@@ -40,6 +40,10 @@ The workflow contains the following documents:
 
 Information about how to setup the repo is in [the following document](./docs/how_to_setup.md).  
 
+## Local experimentation
+
+Developers and Data scientists can use the [execute-command](./notebooks/execute_commands.ipynb) in the `notebooks` to try out the commands in the AML compute from their local machine.
+
 ## Reference
 
 * [Azure Machine learning](https://docs.microsoft.com/azure/machine-learning)
