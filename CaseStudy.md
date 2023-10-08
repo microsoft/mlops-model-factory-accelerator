@@ -40,7 +40,7 @@ The conceptual design has 3 key components which function together to generate a
 ![image](/docs/images/ConceptualDesign.png)
 
 - #### <ins>Machine Learning Model Factory:</ins>
-  - The ML Model factory address the challenges around Model Generation by streamlining the process of generating and managing machine learning models. It enables the data scientist and ML engineers collaborate to develop, package, and manage the ML models at scale, while following the standard MLOps practices.
+  - The ML Model factory address the challenges around Model Generation by streamlining the process of generating and managing machine learning models. It enables the data scientist and ML engineers collaborate to develop, package, and manage the ML models at scale, while following the standard MLOps practices. 
   - The output of the Model Factory is one or more ML models packaged inside their own containerized environment (such as a Docker image).
 - #### <ins> Use Case Builder:</ins>
    - The Use Case Builder provides a solid foundation for the Deployment processes and Pace by providing a convention based framework which enables the developers to build the orchestration layer responsible for interfacing with the underlying edge devices, peripherals and interacting with the ML Model containers for inferencing.
