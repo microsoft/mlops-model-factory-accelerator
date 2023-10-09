@@ -1,0 +1,49 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: train_automl_object_detection_model
+display_name: Train AutoML Object Detection Model
+version: 1
+type: command
+inputs:
+  client_id:
+    type: string
+  client_secret:
+    type: string
+  tenant_id:
+    type: string
+  subscription_id:
+    type: string
+  resource_group_name:
+    type: string
+  workspace_name:
+    type: string
+  training_mltable_path: 
+    type: mltable
+  validation_mltable_path:
+    type: mltable
+  automl_obj_det_model_name: 
+    type: string
+    default: fasterrcnn_resnet18_fpn
+  automl_compute_cluster_name:
+    type: string
+  automl_experiment_name:
+    type: string
+    optional: true
+outputs:
+  model_artifacts_dir:
+    type: uri_folder
+code: ../../../
+environment: azureml:conda-based-devenv-py38-cpu@latest
+command: >-
+  python -m fridge_obj_det.src.train.train
+  --client_id ${{inputs.client_id}}
+  --client_secret ${{inputs.client_secret}}
+  --tenant_id ${{inputs.tenant_id}}
+  --subscription_id ${{inputs.subscription_id}} 
+  --resource_group_name ${{inputs.resource_group_name}} 
+  --workspace_name ${{inputs.workspace_name}} 
+  --training_mltable_path ${{inputs.training_mltable_path}} 
+  --validation_mltable_path ${{inputs.validation_mltable_path}} 
+  --automl_compute_cluster_name ${{inputs.automl_compute_cluster_name}}
+  --automl_obj_det_model_name ${{inputs.automl_obj_det_model_name}}
+  $[[--automl_experiment_name ${{inputs.automl_experiment_name}}]]
+  --model_artifacts_dir ${{outputs.model_artifacts_dir}}

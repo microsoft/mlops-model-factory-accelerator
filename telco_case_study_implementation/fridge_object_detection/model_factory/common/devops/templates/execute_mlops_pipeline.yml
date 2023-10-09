@@ -1,0 +1,28 @@
+parameters:
+  - name: script_parameter
+    type: string
+
+steps:
+  - task: AzureKeyVault@2
+    continueOnError: false
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      KeyVaultName: $(KEYVAULT_NAME)
+      SecretsFilter: "*"
+      RunAsPreJob: false
+  - task: AzureCLI@2
+    name: Execute_ml_Job_Pipeline
+    displayName: Execute Azure ML pipeline job
+    continueOnError: false
+    inputs:
+      azureSubscription: $(AZURE_RM_SVC_CONNECTION)
+      scriptType: bash
+      workingDirectory: $(System.DefaultWorkingDirectory)/model_factory
+      scriptLocation: inlineScript
+      inlineScript: |
+        source ../env/bin/activate
+        export AZURE_CLIENT_ID=$(aml-service-principal-id)
+        export AZURE_TENANT_ID=$(tenant-id)
+        export AZURE_CLIENT_SECRET=$(aml-service-principal-secret)
+        which python
+        ${{parameters.script_parameter}}

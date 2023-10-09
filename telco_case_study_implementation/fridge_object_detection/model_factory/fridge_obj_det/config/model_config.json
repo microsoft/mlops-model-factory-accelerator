@@ -1,0 +1,48 @@
+{
+  "models": [
+    {
+      "ML_MODEL_CONFIG_NAME": "fridge_obj_det",
+      "ENV_NAME": "dev",
+      "AZURE_RM_SVC_CONNECTION": "mfdemosc",
+      "CLUSTER_NAME": "dev-pipeline",
+      "CLUSTER_REGION": "eastus",
+      "CLUSTER_SIZE": "STANDARD_DS3_V2",
+      "CONDA_PATH": "fridge_obj_det/mlops/environment/conda.yml",
+      "DISPLAY_BASE_NAME": "mlops",
+      "ENV_BASE_IMAGE_NAME": "mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04",
+      "ENVIRONMENT_NAME": "automl",
+      "EXPERIMENT_BASE_NAME": "automl-fridge-objects-detection-experiment",
+      "HOST_PORT_NUMBER": "8081",
+      "KEYVAULT_NAME": "mfdemoaml7626959246",
+      "ML_SCOPE_SVC_CONNECTION": "mlops_scoped",
+      "MODEL_BASE_NAME": "fasterrcnn_resnet18_fpn",
+      "REGISTRY_NAME": "mfdemoacr",
+      "RESOURCE_GROUP_NAME": "mfdemorg",
+      "SCORE_FILE_NAME": "score.py",
+      "WORKSPACE_NAME": "mfdemoaml",
+      "AML_ARTIFACT_PATH": "INPUT_onnx_model_artifacts_folder/train_artifacts"
+    },
+    {
+      "ML_MODEL_CONFIG_NAME": "fridge_obj_det",
+      "ENV_NAME": "prod",
+      "AZURE_RM_SVC_CONNECTION": "mfdemosc",
+      "CLUSTER_NAME": "dev-pipeline",
+      "CLUSTER_REGION": "eastus",
+      "CLUSTER_SIZE": "STANDARD_DS3_V2",
+      "CONDA_PATH": "fridge_obj_det/mlops/environment/conda.yml",
+      "DISPLAY_BASE_NAME": "mlops",
+      "ENV_BASE_IMAGE_NAME": "mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04",
+      "ENVIRONMENT_NAME": "automl",
+      "EXPERIMENT_BASE_NAME": "automl-fridge-objects-detection-experiment",
+      "HOST_PORT_NUMBER": "8081",
+      "KEYVAULT_NAME": "mfdemoaml7626959246",
+      "ML_SCOPE_SVC_CONNECTION": "mlops_scoped",
+      "MODEL_BASE_NAME": "fasterrcnn_resnet18_fpn",
+      "REGISTRY_NAME": "mfdemoacr",
+      "RESOURCE_GROUP_NAME": "mfdemorg",
+      "SCORE_FILE_NAME": "score.py",
+      "WORKSPACE_NAME": "mfdemoaml",
+      "AML_ARTIFACT_PATH": "INPUT_onnx_model_artifacts_folder/train_artifacts"
+    }
+  ]
+}

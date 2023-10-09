@@ -1,0 +1,18 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: convert_onnx_fp32_to_fp16
+version: 1
+display_name: convert ONNX from fp32 to fp16
+type: command
+inputs:
+  fp32_input_dir:
+    type: uri_folder
+outputs:
+  fp16_output_dir:
+    type: uri_folder
+environment: azureml:conda-based-devenv-py38-cpu@latest
+code: ../../../
+command: >-
+  python fridge_obj_det/src/convert/convert_fp32_to_fp16.py 
+  ${{inputs.fp32_input_dir}} 
+  ${{outputs.fp16_output_dir}}
+

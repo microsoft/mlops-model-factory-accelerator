@@ -1,0 +1,63 @@
+# pr:
+#   branches:
+#    include:
+#     #  - feature/{feature-branch-name}
+#     #  - add feature branches that will build more features on top of frdige-obj-detection
+#   paths:
+#     include:
+#       - model_factory/fridge_obj_det/*
+#       - model_factory/common/devops/*
+
+# trigger:
+#   branches:
+#      include:
+#       #  - feature/{feature-branch-name}
+#       #  - add feature branches that will build more features on top of frdige-obj-detection  
+#   paths:
+#     include:
+#       - model_factory/fridge_obj_det/*
+#       - model_factory/common/devops/*
+
+# Replace this section with the above changes, when there is a new feature branch 
+# that will build on top of fridge-obj-detection
+pr: none
+trigger: none
+
+parameters:
+ - name: exec_environment
+   displayName: "Execution Environment"
+   default: "dev"
+ - name: model_type
+   displayName: "type of model to execute"
+   default: "fridge_obj_det"
+
+variables:
+- group: mlops_platform_${{parameters.exec_environment}}_vg
+- name: PIPELINE_TYPE
+  value: ${{parameters.model_type}}
+
+stages:
+    - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/variables_template.yml
+      parameters:
+        exec_environment: ${{parameters.exec_environment}}
+        model_type: ${{parameters.model_type}}
+
+    - stage: build_validation
+      displayName: build_validation
+      dependsOn: 
+      - variable_generation
+      variables:
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/experiment_variables.yml
+      jobs:
+        - template: build_validation_pipeline.yml
+          parameters:
+            model_type: ${{ parameters.model_type }}
+        
+    - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/platform_dev_pipeline.yml
+        parameters:
+          exec_environment: ${{ parameters.exec_environment }}
+          model_type: ${{ parameters.model_type }}
+       
+
+      

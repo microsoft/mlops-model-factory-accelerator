@@ -1,0 +1,45 @@
+parameters:
+  - name: model_type
+    displayName: "type of model to execute"
+
+jobs:
+- job: Build_Validation_Pipeline
+  workspace:
+    clean: outputs | resources | all 
+  steps:
+  - task: UsePythonVersion@0
+    displayName: 'Use Python 3.8'
+    inputs:
+      versionSpec: '3.8'
+      addToPath: true 
+
+  - script: |
+      python -m venv env
+      source env/bin/activate
+      python -m pip install --upgrade pip
+      python -m pip install -r model_factory/${{parameters.model_type}}/devops/pipelines/requirements/build_validation_requirements.txt
+    displayName: "Load Python Dependencies"
+    
+  - script: |
+      source env/bin/activate
+      flake8 ./model_factory/${{parameters.model_type}}
+    displayName: "Lint with flake8"
+
+  - script: |
+      source env/bin/activate
+      cd model_factory
+      export PYTHONPATH=.
+      pytest  ./${{parameters.model_type}} --ignore=sandbox/ --junitxml=junit/test-results.xml --cov=. --cov-report=xml
+    displayName: 'Run Unit Tests'
+    condition: succeededOrFailed()
+
+  - task: PublishTestResults@2
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFiles: '**/test-*.xml'
+      testRunTitle: 'Publish Test Results for Python $(python.version)'
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'

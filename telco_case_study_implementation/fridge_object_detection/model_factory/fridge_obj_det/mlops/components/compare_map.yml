@@ -1,0 +1,20 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: map_comparision
+version: 1
+display_name: Compare 2 mAP values
+type: command
+inputs:
+  map_before:
+    type: uri_file
+  map_after:
+    type: uri_file
+outputs:
+  metrics_json_file:
+    type: uri_file
+environment: azureml:conda-based-devenv-py38-cpu@latest
+code: ../../../
+command: >-
+  python fridge_obj_det/src/compare_map/compare_map.py
+  ${{inputs.map_before}} 
+  ${{inputs.map_after}}
+  ${{outputs.metrics_json_file}}

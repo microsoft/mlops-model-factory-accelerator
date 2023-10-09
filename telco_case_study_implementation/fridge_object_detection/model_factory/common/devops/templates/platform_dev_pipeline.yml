@@ -1,0 +1,37 @@
+parameters:
+  - name: exec_environment
+    displayName: "Execution Environment"
+    default: "dev"
+  - name: model_type
+    displayName: "type of model to execute"
+  - name: runMlops
+    displayName: "Run MLOps"
+    default: true
+
+stages:
+  - stage: execute_training_job
+    displayName: execute_training_job
+    dependsOn:
+      - variable_generation
+      - build_validation
+    variables:
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/experiment_variables.yml
+    jobs:
+      - job: Execute_ml_Job_Pipeline
+        condition: eq('${{ parameters.runMlops }}', true)
+        timeoutInMinutes: 360
+        steps:
+          - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/get_connection_details.yml
+          - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/configure_azureml_agent.yml
+            parameters:
+              model_type: ${{parameters.model_type}}
+          - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/${{parameters.model_type}}/devops/pipelines/${{parameters.model_type}}_mlops_pipeline.yml
+            parameters:
+              model_type: ${{parameters.model_type}}
+              model_name: $(MODEL_NAME)
+
+      - template: ${{variables['System.DefaultWorkingDirectory']}}/model_factory/common/devops/templates/image_generation_template.yml
+        parameters:
+          exec_environment: ${{parameters.exec_environment}}
+          model_type: ${{parameters.model_type}}
+          dependencies: "Execute_ml_Job_Pipeline"

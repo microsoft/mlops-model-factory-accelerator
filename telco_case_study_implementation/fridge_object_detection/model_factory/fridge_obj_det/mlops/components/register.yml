@@ -1,0 +1,43 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: register_onnx_model
+version: 1
+display_name: Register an ONNX model as a custom model in the AML workspace.
+type: command
+inputs:
+  client_id:
+    type: string
+  client_secret:
+    type: string
+  tenant_id:
+    type: string
+  subscription_id:
+    type: string
+  resource_group_name:
+    type: string
+  workspace_name:
+    type: string
+  onnx_model_artifacts_folder:
+    type: uri_folder
+  registered_model_name:
+    type: string
+  registered_model_description:
+    type: string
+  build_reference_id:
+    type: string
+  metrics_json_file:
+    type: uri_file
+environment: azureml:conda-based-devenv-py38-cpu@latest
+code: ../../../
+command: >-
+  python -m fridge_obj_det.src.register.register 
+  --client_id ${{inputs.client_id}}
+  --client_secret ${{inputs.client_secret}}
+  --tenant_id ${{inputs.tenant_id}}
+  --subscription_id ${{inputs.subscription_id}} 
+  --resource_group_name ${{inputs.resource_group_name}} 
+  --workspace_name ${{inputs.workspace_name}} 
+  --input_model_artifacts_path ${{inputs.onnx_model_artifacts_folder}}
+  --registered_model_name ${{inputs.registered_model_name}}
+  --registered_model_description "${{inputs.registered_model_description}}"
+  --build_reference ${{inputs.build_reference_id}}
+  --metrics_json_path ${{inputs.metrics_json_file}}

@@ -1,0 +1,21 @@
+$schema: https://azuremlschemas.azureedge.net/latest/commandComponent.schema.json
+name: test_map_score
+version: 1
+display_name: calculate mAP score
+type: command
+inputs:
+  model_folder_path:
+    type: uri_folder
+  mltable_folder:
+    type: uri_folder
+outputs:
+  results_file:
+    type: uri_file
+environment: azureml:conda-based-devenv-py38-cpu@latest
+code: ../../../
+command: >-
+  python fridge_obj_det/src/score/score.py
+  ${{inputs.model_folder_path}} 
+  ${{inputs.mltable_folder}} 
+  ${{outputs.results_file}}
+
