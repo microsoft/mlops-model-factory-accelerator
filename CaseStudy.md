@@ -63,12 +63,12 @@ The workflow of a model from a developer environment to a production container r
  ![image](/docs/images/MLModelFactory_Design.png)
 
 #### Key Features
-•	Supports generation of multiple ML Models
-•	MLOps pipeline for Data preparation, transformation, Model Training, evaluation, scoring and registration.
-•	Each ML Model is packaged in an independent Docker Image
-•	Model verification before storing the Docker image
-•	All Docker images are stored in Azure Container Registry
-•	Builds and deploys Smoke Test module on Edge device
+- Supports generation of multiple ML Models
+- MLOps pipeline for Data preparation, transformation, Model Training, evaluation, scoring and registration.
+- Each ML Model is packaged in an independent Docker Image
+- Model verification before storing the Docker image
+- All Docker images are stored in Azure Container Registry
+- Builds and deploys Smoke Test module on Edge device
 
 ### Use Case Builder Design 
 Use case builder provides a convention based approach to enable the developers to build and manage multiple use-cases across different environments. The framework provides the ability to create a single deployment manifest that bundles one or more ML models along the orchestration layer to server an end to end use case.
@@ -78,11 +78,11 @@ At its core, the Use Case Builder leverages Azure IoT Edge and Azure DevOps pipe
 The workflow of Use Case Builder from a developer environment to a production container registry is depicted below .
   ![image](/docs/images/UseCaseBuilder_Design.png)
 #### Key Features
-•	Bundles model reference and orchestration layer into a single deployable entity based on the business scenario.
-•	DevOps pipeline templates for the use-cases to build, test and publish artifacts.
-•	Ability to author and manage the IoT Edge manifest for a use-case specific deployment on the targeted edge devices.
-•	Validation of the complete use-cases using an integrated end-to-end test running on the actual edge device.
-•	Provision to scaffold a use-case with a predefined folder structure.
+- Bundles model reference and orchestration layer into a single deployable entity based on the business scenario.
+- DevOps pipeline templates for the use-cases to build, test and publish artifacts.
+- Ability to author and manage the IoT Edge manifest for a use-case specific deployment on the targeted edge devices.
+- Validation of the complete use-cases using an integrated end-to-end test running on the actual edge device.
+- Provision to scaffold a use-case with a predefined folder structure.
 ### Data Collection on the Edge Design
 Data Collection on the Edge component enables the customer to have a secure and automated process for data collection (images) from the edge devices, and use those images as a source for subsequent model training (post annotation).
 This component leverages [Azure Blob Storage IoT Edge](https://learn.microsoft.com/en-us/azure/iot-edge/how-to-store-data-blob?view=iotedge-1.4) modules at its core to provides a low-code mechanism for the edge devices to push binary data to remote azure blob storage accounts.
